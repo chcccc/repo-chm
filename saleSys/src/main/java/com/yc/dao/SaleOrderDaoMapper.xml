@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yc.dao.SaleOrderDaoMapper">
+
+	<!-- 使用默认mybatis : 二级缓存 -->
+	<cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true" />
+	
+	<resultMap type="SaleOrder" id="orderMap">
+		<id property="odrId" column="odr_id" />
+		<result property="odrCustomerId" column="odr_customer_id" />
+		<result property="odrCustomerName" column="odr_customer_name" />
+		<result property="odrDeliverAddr" column="odr_deliver_addr" />
+		<result property="odrOrderDate" column="odr_order_date" />
+		<result property="odrDeliverDate" column="odr_deliver_date" />
+		<result property="odrStatus" column="odr_status" />
+		
+		<collection property="saleOrderLines" ofType="SaleOrderLine">
+ 			<id property="odlId" column="odl_id"/>
+ 			<result property="odlProductName" column="odl_product_name" />
+ 			<result property="odlProductPrice" column="odl_product_price" />
+ 			<result property="odlProductCount" column="odl_product_count" />
+ 		</collection>
+ 		
+	</resultMap>
+	
+
+	<select id="getWithLines" resultMap="orderMap">
+		 select odr_id,odr_customer_id,odr_customer_name,odr_deliver_addr,odr_order_date,odr_deliver_date,odr_status,
+       			odl_id, odl_order_id,odl_product_name,odl_product_price,odl_product_count
+		from sale_order
+		left join sale_order_line
+		on sale_order.odr_id=sale_order_line.odl_order_id
+		where sale_order.odr_id=#{id}
+	</select>
+
+	<insert id="add" parameterType="SaleOrder" useGeneratedKeys="true"
+		keyColumn="odr_id" keyProperty="odrId">
+		insert into sale_order(
+		odr_customer_id,odr_customer_name,odr_deliver_addr,odr_order_date,odr_deliver_date,odr_status)
+		values(#{odrCustomerId}, #{odrCustomerName}
+		,#{odrDeliverAddr},#{odrOrderDate},#{odrDeliverDate} ,#{odrStatus} )
+	</insert>
+
+	<insert id="addDetail" parameterType="SaleOrderLine"
+		useGeneratedKeys="true" keyColumn="odl_id" keyProperty="odlId">
+		insert into
+		sale_order_line(odl_order_id,odl_product_name,odl_product_price,odl_product_count)
+		values(
+		#{saleOrder.odrId},#{odlProductName},#{odlProductPrice},#{odlProductCount})
+	</insert>
+	
+	<update id="updateDetail" parameterType="SaleOrderLine">
+		update sale_order_line set odl_product_count=#{odlProductCount} where odl_id=#{odlId}
+	</update>
+	
+	<delete id="delOrderLine" parameterType="SaleOrderLine">
+		delete from sale_order_line where odl_id=#{odlId}
+	</delete>
+
+</mapper>

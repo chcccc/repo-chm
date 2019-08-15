@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yc.dao.CusCustomerDaoMapper">
+
+	<!-- 使用默认mybatis : 二级缓存 -->
+	<cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true" />
+
+
+	<resultMap type="CusCustomer" id="CusCustomerMap">
+		<id column="cus_id" property="cusId"/> 
+		<result column="cus_name" property="cusName"/>
+		<result column="cus_addr" property="cusAddr"/>
+	</resultMap>
+	
+	<!-- 不能用resultType,因为列名与属性名不一样，所以用resultMap来映射 -->
+	<select id="findAll" resultMap="CusCustomerMap">
+		 <![CDATA[ 
+      		select * from cus_customer
+        ]]>
+	</select>
+
+</mapper>

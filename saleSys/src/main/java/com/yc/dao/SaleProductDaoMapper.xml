@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yc.dao.SaleProductDaoMapper">
+
+	<!-- 使用默认mybatis : 二级缓存 -->
+	<cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true" />
+
+	<resultMap type="SaleProduct" id="SaleProductMap">
+		<id column="prod_id" property="prodId"/> 
+		<result column="prod_name" property="prodName"/>
+		<result column="prod_price" property="prodPrice"/>
+	</resultMap>
+	
+	<select id="findAll" resultMap="SaleProductMap">
+		 <![CDATA[ 
+      		select * from Sale_Product
+        ]]>
+	</select>
+
+</mapper>
